@@ -1,3 +1,17 @@
+
+##conversor para extrair funcionários de planilha.xlsx e adicionar em banco licença utilizando
+biblioteca excelize => https://github.com/360EntSecGroup-Skylar/excelize
+
+##getting samples from: http://file-examples.com/index.php/sample-documents-download/sample-xls-download/
+
+
+##instalation
+
+#getting the library
+#go get github.com/360EntSecGroup-Skylar/excelize
+
+
+
 **Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
 
 When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
