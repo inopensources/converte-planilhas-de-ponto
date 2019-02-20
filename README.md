@@ -1,6 +1,9 @@
 
 ##conversor para extrair funcionários de planilha.xlsx e adicionar em banco licença utilizando
-biblioteca excelize => https://github.com/360EntSecGroup-Skylar/excelize
+#biblioteca excelize => https://github.com/360EntSecGroup-Skylar/excelize
+
+#biblioteca xls
+#https://github.com/extrame/xls
 
 ##getting samples from: http://file-examples.com/index.php/sample-documents-download/sample-xls-download/
 

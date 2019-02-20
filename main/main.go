@@ -1,22 +1,18 @@
 package main
 
 import (
-
-	"../../github.com/360EntSecGroup-Skylar/excelize"
-	"../src/github/tealeg/xlsx"
 	"fmt"
 
+	"../src/xls"
 )
-
 
 /*
 *get all the rows in the Sheet indicated
-*/
-func getAllRows(sheet string, pathToFile string){
-
+ */
+/*func getAllRows(sheet string, pathToFile string) {
 
 	xlsx, err := excelize.OpenFile(pathToFile)
-	if err != nil{
+	if err != nil {
 		fmt.Print(err)
 	}
 
@@ -27,30 +23,28 @@ func getAllRows(sheet string, pathToFile string){
 		}
 		fmt.Println()
 	}
-}
+}*/
 
 /**
 *get the value from cell by given worksheet name and axis
-*/
-func getCell(sheet string ,axis string, pathToFile string) string {
+ */
+/*func getCell(sheet string, axis string, pathToFile string) string {
 
 	xlsx, err := excelize.OpenFile(pathToFile)
-	if err != nil{
+	if err != nil {
 		fmt.Print(err)
 	}
 
 	cell := xlsx.GetCellValue(sheet, axis)
 	fmt.Println(cell)
 	return cell
-}
-
-
+}*/
 
 func main() {
 
-	print("=======================\n"+
-		         "Conversor Licença XSLX\n" +
-		         "========================\n")
+	print("=======================\n" +
+		"Conversor Licença XSLX\n" +
+		"========================\n")
 
 	/*//getting a single cell
 	getCell("Sheet1", "B1", "../samples/file_example_XLSX_10.xlsx")
@@ -58,29 +52,53 @@ func main() {
 	//getting all rows
 	getAllRows("Sheet1", "../samples/file_example_XLSX_10.xlsx")*/
 
-
 	//getting a single cell
 	//getCell("Sheet1", "B1", "../samples/file_example_XLSX_10.xlsx")
 	//getting all rows
 	//getAllRows("Sheet1", "../samples/file_example_XLS_10.xls")
 
 	//using extrame library
-/*	if xlFile, err := Open("Table.xls", "utf-8"); err == nil {
-		if sheet1 := xlFile.GetSheet(0); sheet1 != nil {
-			fmt.Print("Total Lines ", sheet1.MaxRow, sheet1.Name)
-			col1 := sheet1.Rows[0].Cols[0]
-			col2 := sheet1.Rows[0].Cols[0]
-			for i := 0; i <= (int(sheet1.MaxRow)); i++ {
-				row1 := sheet1.Rows[uint16(i)]
-				col1 = row1.Cols[0]
-				col2 = row1.Cols[11]
-				fmt.Print("\n", col1.String(xlFile), ",", col2.String(xlFile))
-			}
+	if xlFile, err := xls.Open("../samples/CartaoPonto_Sistemas_2017.xls", "utf-8"); err == nil {
+
+		if err != nil {
+			fmt.Print(err)
 		}
-	}*/
+
+		fmt.Print("Num Sheets:\n", xlFile.NumSheets(), "\n")
+
+		for i := 0; i < xlFile.NumSheets(); i++ {
+			fmt.Println(xlFile.GetSheet(i).Name, "\n")
+			sheet := xlFile.GetSheet(i)
+			fmt.Print("Total Lines:\n", sheet.MaxRow, "\n")
+
+			for row_index := 1; row_index < 15; row_index++ {
+				row := sheet.Row(row_index)
+				for index := row.FirstCol(); index < row.LastCol(); index++ {
+					fmt.Println(index, "==>", row.Col(index), " ")
+
+				}
+			}
+
+		}
+
+		/*if sheet1 := xlFile.GetSheet(0); sheet1 != nil {
+
+			fmt.Print("Sheet Name:\n", sheet1.Name, "\n")
+
+			fmt.Print("Total Lines:\n", sheet1.MaxRow, "\n")
+
+			row := sheet1.Row(0)
+
+			for index := row.FirstCol(); index < row.LastCol(); index++ {
+				fmt.Println(index, "==>", row.Col(index), " ")
+
+			}
+
+		}*/
+	}
 
 	//using tealeg library
-	excelFileName := "../samples/file_example_XLS_10.xls"
+	/*excelFileName := "../samples/file_example_XLS_10.xls"
 	xlFile, err := xlsx.OpenFile(excelFileName)
 	if err != nil {
 		fmt.Print(err)
@@ -92,7 +110,6 @@ func main() {
 				fmt.Printf("%s\n", text)
 			}
 		}
-	}
-
+	}*/
 
 }
