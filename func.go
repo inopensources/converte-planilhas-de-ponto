@@ -1,4 +1,4 @@
-package funcionario
+package main
 
 type funcionario struct{
 	nome string

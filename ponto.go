@@ -1,4 +1,4 @@
-package Ponto
+package main
 
 type Ponto struct {
 

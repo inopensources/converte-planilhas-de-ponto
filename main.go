@@ -1,13 +1,11 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/extrame/xls"
 	_ "github.com/lib/pq"
-	"log"
-	"strconv"
 )
+
 
 
 /**********************************
@@ -20,10 +18,10 @@ type Employee struct {
 
 type Point struct {
 	data string
-	entrada_1 float64
-	entrada_2 float64
-	entrada_3 float64
-	entrada_4 float64
+	entrada_1 string
+	entrada_2 string
+	entrada_3 string
+	entrada_4 string
 	natureza string
 	natureza_id int
 }
@@ -32,7 +30,6 @@ type Point struct {
 /****************************
 * Methods for .xlsx extension
 *****************************/
-
 
 
 /****************************
@@ -113,25 +110,21 @@ func getPoints(){
 			if xlFile.GetSheet(i).Name != "MODELO" {
 
 
-
 				sheet := xlFile.GetSheet(i)
 				num_row := sheet.MaxRow
 
 				//retorna nome de usuário:
-				roww_nome_funcionario := sheet.Row(4)
-				var nome_funcionario = roww_nome_funcionario.Col(2)
+				row_nome_funcionario := sheet.Row(4)
+				var nome_funcionario = row_nome_funcionario.Col(2)
+				id_employee := getIdEmployee(nome_funcionario)
 
-				//creating structure employee todo: pegar id através de nome
 				emp := Employee{
 					name: nome_funcionario,
-					id:       95,
+					id:       id_employee,
 				}
 
 				fmt.Println("------------------------------------")
-
-				fmt.Println(nome_funcionario)
-				fmt.Println("Employee", emp)
-
+				fmt.Println("Funcionário", emp)
 				fmt.Println("------------------------------------")
 
 				row_index := 1
@@ -140,39 +133,37 @@ func getPoints(){
 					row := sheet.Row(row_index)
 
 
-
 					if row.Col(0) == "F O L H A D E F R E Q U E N C I A" {
 
 						//movendo ponteiro para iniciar  leitura de horários
 						row_index += 3
+						row := sheet.Row(row_index)
+						condicao_parada := row.Col(6)
 
-						for row.Col(6) != " "{
+						for condicao_parada != " "{
 
 							points_initial_row := sheet.Row(row_index)
 
-							entrada_1, _ := strconv.ParseFloat(points_initial_row.Col(1), 64)
-							entrada_2, _ := strconv.ParseFloat(points_initial_row.Col(2), 64)
-							entrada_3, _ := strconv.ParseFloat(points_initial_row.Col(3), 64)
-							entrada_4, _ := strconv.ParseFloat(points_initial_row.Col(4), 64)
-
 							natureza := points_initial_row.Col(6)
-                            point := Point{
+							condicao_parada = natureza
+							id_natureza := getIdNatureza(natureza)
+
+							point := Point{
 								data: "12-12-12",
-								entrada_1: entrada_1*24,
-							    entrada_2: entrada_2*24,
-							    entrada_3: entrada_3*24,
-							    entrada_4: entrada_4*24,
+								entrada_1: points_initial_row.Col(1),
+							    entrada_2: points_initial_row.Col(2),
+							    entrada_3: points_initial_row.Col(3),
+							    entrada_4: points_initial_row.Col(4),
 								natureza: natureza,
-								natureza_id: 1,
+								natureza_id: id_natureza,
 							}
 
-							fmt.Print(entrada_1*24, "  ")
-							fmt.Print(entrada_2*24, "  ")
-							fmt.Print(entrada_3*24, "  ")
-							fmt.Print(entrada_4*24, "  ")
-							fmt.Println(natureza)
 
+							fmt.Println(points_initial_row.Col(6))
 							fmt.Println("Point", point)
+
+                            /*Armazenando Ponto*/
+							insertPoints(id_employee, 40, "2013-12-13 13:13:13", "2013-12-13 13:13:13","2013-12-13 13:13:13","2013-12-13 13:13:13","2013-12-13 13:13:13","2013-12-13 13:13:13", false, false, "2013-12-13 13:13:13", "nada", id_natureza)
 
 							row_index += 1
 
@@ -216,111 +207,30 @@ func getAllContent() {
 
 				/*Percorre todos os elementos da aba*/
 				//percorre linhas dentro de aba
+
 				for row_index := 1; row_index <= int(num_row); row_index++ {
 
-					row := sheet.Row(row_index)
+						row := sheet.Row(row_index)
 
-					//percorre colunas dentro de linha
-					for col_index := row.FirstCol(); col_index  < row.LastCol(); col_index ++ {
-						fmt.Print("[",row_index,":",col_index,"]>", row.Col(col_index ), "  ")
-					}
+						if row != nil {
 
-					fmt.Println()
+							col_index_first := row.FirstCol()
+							col_index_last  := row.LastCol()
+
+							//percorre colunas dentro de linha
+							for col_index := col_index_first; col_index  < col_index_last; col_index ++ {
+								fmt.Print("[",row_index,":",col_index,"]>", row.Col(col_index ), "  ")
+							}
+
+							fmt.Println()
+						}
+
 				}
+
 			}
 
 		}
 	}
-}
-
-/********************************************************************************************************
-* from queries.go todo: move to there
- **********************************************************************************************************/
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "postgres"
-	dbname   = "conversor_teste"
-)
-
-
-func connect(){
-
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
-
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println("Successfully connected!")
-
-
-
-	/****************************
-	* FROM METHOD getUserIdFromName
-	*todo: move to there !!!
-	******************************/
-
-	var id_user int
-
-	err = db.QueryRow(`SELECT id FROM usuario WHERE nome LIKE 'HENRIQUE'`).Scan(&id_user)
-
-	if err == sql.ErrNoRows {
-		log.Fatal("No Results Found")
-	}
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(id_user)
-
-
-	/****************************
-	* FROM METHOD getIdFromNatureza
-	*todo: move to there !!!
-	******************************/
-
-	var id_natureza int
-
-	err = db.QueryRow(`SELECT id FROM tipos_ausencia WHERE natureza LIKE 'Normal'`).Scan(&id_natureza)
-
-	if err == sql.ErrNoRows {
-		log.Fatal("No Results Found")
-	}
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(id_natureza)
-
-
-	/****************************
-	* FROM METHOD inserting points
-	*todo: move to there  !!!
-	******************************/
-    //todo: tratar sql injection aqui
-	/*sqlStatement = `
-	INSERT INTO ponto (usuario_id, gerente_id, entrada1, saida1, entrada2, saida2, entrada3, saida3, flg_gerado, flg_autorizado_pelo_rh, created_at, observacao, tipo_ausencia)
-	VALUES (95, 40,'2013-12-13 13:13:13','2013-12-13 13:13:13','2013-12-13 13:13:13','2013-12-13 13:13:13','2013-12-13 13:13:13','2013-12-13 13:13:13', false, false, '2013-12-13 13:13:13', 'nada', 4263)`
-	_, err = db.Exec(sqlStatement)
-	if err != nil {
-		panic(err)
-
-	}*/
-
-
 }
 
 func main(){
@@ -330,7 +240,7 @@ func main(){
 		"Conversor Licença XLS/XSLX\n" +
 		"========================\n")
 
-	connect()
+
 
 	/*Using excelize library!*/
 	/*//getting a single cell
@@ -344,7 +254,10 @@ func main(){
 	//getting all rows
 	//getAllRows("Sheet1", "../samples/file_example_XLS_10.xls")
 
-	getPoints()
-	//getAllContent()
+	//getPoints()
+	getAllContent()
+
+	// Output:
+	// resume
 
 }
