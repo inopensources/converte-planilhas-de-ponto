@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/extrame/xls"
 	_ "github.com/lib/pq"
+	"strings"
 )
 
 
@@ -98,6 +99,10 @@ func getQuantEmployers(pathFile string) int {
 func getPoints(){
 
 	fmt.Println("Getting Points..")
+	dia := 0
+	mes := 0
+	ano := ""
+	data := ""
 
 
 	if xlFile, err := xls.Open("./samples/CartaoPonto_Sistemas_2017.xls", "utf-8"); err == nil {
@@ -108,11 +113,11 @@ func getPoints(){
 
 		for i := 0; i <= xlFile.NumSheets(); i++ {
 
+			sheet := xlFile.GetSheet(i)
+
 			//verifica se é aba modelo
 			if xlFile.GetSheet(i).Name != "MODELO" {
 
-
-				sheet := xlFile.GetSheet(i)
 				num_row := sheet.MaxRow
 
 				//retorna nome de usuário:
@@ -132,6 +137,8 @@ func getPoints(){
 					if row != nil {
 
 						if row.Col(0) == "F O L H A D E F R E Q U E N C I A" {
+							/*assumindo uma folha de frequência por mês*/
+							mes++
 
 							//movendo ponteiro para iniciar  leitura de horários
 							row_index += 3
@@ -140,18 +147,22 @@ func getPoints(){
 
 							for condicao_parada != "" && condicao_parada != " " {
 
+								/*assumindo cada linha um dia*/
+								dia++
+
 								points_initial_row := sheet.Row(row_index)
 
 								natureza := points_initial_row.Col(6)
 								condicao_parada = natureza
 
-								fmt.Println(row_index, condicao_parada)
-
 								id_natureza := 12 //getIdNatureza(natureza)
 								observacao := points_initial_row.Col(7)
 
+								data = string(dia) + "-" + string(mes) + "-" + ano
+								fmt.Println(data)
+
 								point := Point{
-									data:                   "12-12-12",
+									data:                   data,
 									entrada_1:              points_initial_row.Col(1),
 									saida_1:                points_initial_row.Col(2),
 									entrada_2:              points_initial_row.Col(3),
@@ -175,6 +186,12 @@ func getPoints(){
 
 				}
 
+			}else{
+
+				//utilizando modelo para recuperar ano
+				row_date := sheet.Row(1)
+				ano = strings.Split(row_date.Col(8), ";")[0]// everything before the query
+
 			}
 
 		}
@@ -186,7 +203,7 @@ func getPoints(){
 func getAllContent() {
 
 	//using extrame library
-	if xlFile, err := xls.Open("./samples/CartaoPonto_Sistemas_2017.xls", "utf-8"); err == nil {
+	if xlFile, err := xls.Open("./samples/CartaoPonto_Sistemas_2017.xls", "UTF-32"); err == nil {
 
 		if err != nil {
 			fmt.Print(err)
@@ -220,7 +237,7 @@ func getAllContent() {
 
 							//percorre colunas dentro de linha
 							for col_index := col_index_first; col_index  < col_index_last; col_index ++ {
-								fmt.Print("[",row_index,":",col_index,"]>", row.Col(col_index ), "  ")
+								fmt.Print("[",row_index,":",col_index,"]>", row.Col(col_index), "  ")
 							}
 
 							fmt.Println()
@@ -233,6 +250,41 @@ func getAllContent() {
 		}
 	}
 }
+
+/*monta estruturas com as datas e pontos de funcinários do mês*/
+func mount_objects() {
+		if xlFile, err := xls.Open("./samples/CartaoPonto_Sistemas_2018.xls", "utf-8"); err == nil {
+
+			    //pegando aba modelo para recuperar datas
+				if sheet1 := xlFile.GetSheet(0); sheet1 != nil {
+
+					for i := 0; i <= (int(sheet1.MaxRow)); i++ {
+						row := sheet1.Row(i)
+
+						if row != nil {
+
+							col_index_first := row.FirstCol()
+							col_index_last := row.LastCol()
+
+							//percorre colunas dentro de linha
+							for col_index := col_index_first; col_index < col_index_last; col_index ++ {
+								//fmt.Print("[", i, ":", col_index, "]>", row.Col(col_index), "  ")
+								if row.Col(col_index) == "Mês/Ano" {
+									i += 1 //andando uma linha abaixo
+									row := sheet1.Row(i)
+									fmt.Println("[",i,":", col_index,"]",row.Col(8))
+								}
+							}
+						}
+
+					}
+
+				}
+
+
+		}
+	}
+
 
 func main(){
 
