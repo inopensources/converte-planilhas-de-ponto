@@ -8,7 +8,6 @@ import (
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
 	"log"
-	"strconv"
 	"strings"
 	"unicode"
 )
@@ -48,11 +47,8 @@ func connect(){
 }
 
 
-func formatString(word string) string{
+func remove_accent(word string) string{
 
-	word = strings.ToUpper(word)
-
-	//removendo acentuação
 	t := transform.Chain(norm.NFD, runes.Remove(runes.In(unicode.Mn)), norm.NFC)
 	word, _, _ = transform.String(t, word)
 
@@ -82,7 +78,9 @@ func getIdEmployee(name string) int{
 	}
 	/*-----------------------------------------------------------------------------------*/
 
-	name = formatString(name)
+	name = strings.ToUpper(name)
+	name = remove_accent(name)
+	fmt.Println(name)
 
 	var id_user int
 	sqlStatement := `SELECT id FROM usuario WHERE nome LIKE $1`
@@ -120,10 +118,11 @@ func getIdNatureza(descricao_natureza string) int{
 	}
 	/*-----------------------------------------------------------------------------------*/
 
-
+    /*formatando descrição da natureza*/
 	descricao_natureza = strings.ToLower(descricao_natureza)
 	//capitalizing the first letter of each word
 	descricao_natureza = strings.Title(descricao_natureza)
+	descricao_natureza = remove_accent(descricao_natureza)
 
 	var id_natureza int
 	sqlStatment := `SELECT id FROM tipos_ausencia WHERE natureza LIKE $1`
@@ -141,7 +140,7 @@ func getIdNatureza(descricao_natureza string) int{
 /****************************
 * Insere pontos em banco
 ******************************/
-func insertPoints(usuario_id int, gerente_id int, entrada_1 string, saida1 string , entrada2 string, saida2 string , entrada3 string , saida3 string , flg_gerado bool, flg_autorizado_pelo_rh bool, created_at string, observacao string, tipo_ausencia int){
+func insertPoints(point Point, employee Employee){
 
 	/*------------------------------making connection-----------------------------------
 	*todo: seria ideal utilizar a funçao connect | referencia a db e err se perdendo
@@ -162,11 +161,32 @@ func insertPoints(usuario_id int, gerente_id int, entrada_1 string, saida1 strin
 	/*-----------------------------------------------------------------------------------*/
 
 
-	/*****************************************tratando entradas****************************
+	/*------------------------------------tratando entradas--------------------------------
 	* todo: formatar no formato: "2013-12-13 13:13:13" e modularizar
 	*/
 
-	entrada_1_formated, _ := strconv.ParseFloat(entrada_1, 64)
+	//fmt.Println(point, employee)
+
+    //entradas:
+	usuario_id := employee.id
+	gerente_id := 40
+
+	//entradas em format string e com apenas as datas
+	entrada_1 := "2013-12-13 13:13:13" //point.entrada_1
+	saida_1 :="2013-12-13 13:13:13" // point.saida_1
+	entrada_2 := "2013-12-13 13:13:13" //point.entrada_2
+	saida_2 := "2013-12-13 13:13:13" //point.saida_2
+	entrada_3 := "2013-12-13 13:13:13"
+	saida_3 := "2013-12-13 13:13:13"
+
+	flg_gerado := point.flg_gerado
+	flg_autorizado_pelo_rh := point.flg_autorizado_pelo_rh
+
+	created_at := entrada_1
+	observacao := point.observacao
+	tipo_ausencia := point.natureza_id
+
+	/*entrada_1_formated, _ := strconv.ParseFloat(entrada_1, 64)
 	entrada_1_formated *=24
 
 	saida1_formated, _ := strconv.ParseFloat(saida1, 64)
@@ -177,7 +197,7 @@ func insertPoints(usuario_id int, gerente_id int, entrada_1 string, saida1 strin
 
 	saida2_formated, _ := strconv.ParseFloat(saida2, 64)
 	saida2_formated *=24
-
+*/
 /*	//formatando entradas
 	entrada_string := fmt.Sprintf("%f", entrada_1)
 	fmt.Println("entrada_string", entrada_string)
@@ -190,14 +210,14 @@ func insertPoints(usuario_id int, gerente_id int, entrada_1 string, saida1 strin
 	entrada_1_formated := entrada_hour + ":" + strconv.Itoa(int(entrada_minutes[0]))
 	fmt.Println("entrada_1_formated", entrada_1_formated)
 */
-
+  /*----------------------------------------------------------------------------------------------------------*/
 
 
 	//todo: tratar sql injection aqui
 	sqlStatement := `
 	INSERT INTO ponto (usuario_id, gerente_id, entrada1, saida1, entrada2, saida2, entrada3, saida3, flg_gerado, flg_autorizado_pelo_rh, created_at, observacao, tipo_ausencia)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`
-_, err = db.Exec(sqlStatement, usuario_id, gerente_id, entrada_1, saida1, entrada2, saida2, entrada3, saida3, flg_gerado, flg_autorizado_pelo_rh, created_at, observacao, tipo_ausencia)
+_, err = db.Exec(sqlStatement, usuario_id, gerente_id, entrada_1, saida_1, entrada_2, saida_2, entrada_3, saida_3, flg_gerado, flg_autorizado_pelo_rh, created_at, observacao, tipo_ausencia)
 	if err != nil {
 		panic(err)
 	}

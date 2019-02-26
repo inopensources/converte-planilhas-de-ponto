@@ -19,11 +19,14 @@ type Employee struct {
 type Point struct {
 	data string
 	entrada_1 string
+	saida_1 string
 	entrada_2 string
-	entrada_3 string
-	entrada_4 string
+	saida_2 string
 	natureza string
 	natureza_id int
+	observacao string
+	flg_gerado bool
+	flg_autorizado_pelo_rh bool
 }
 
 
@@ -92,7 +95,6 @@ func getQuantEmployers(pathFile string) int {
 	return num_employers
 }
 
-
 func getPoints(){
 
 	fmt.Println("Getting Points..")
@@ -118,60 +120,59 @@ func getPoints(){
 				var nome_funcionario = row_nome_funcionario.Col(2)
 				id_employee := getIdEmployee(nome_funcionario)
 
-				emp := Employee{
+				employee := Employee{
 					name: nome_funcionario,
 					id:       id_employee,
 				}
 
-				fmt.Println("------------------------------------")
-				fmt.Println("Funcionário", emp)
-				fmt.Println("------------------------------------")
-
-				row_index := 1
-				for row_index <= int(num_row) {
+				for row_index := 1; row_index <= int(num_row); row_index++ {
 
 					row := sheet.Row(row_index)
 
+					if row != nil {
 
-					if row.Col(0) == "F O L H A D E F R E Q U E N C I A" {
+						if row.Col(0) == "F O L H A D E F R E Q U E N C I A" {
 
-						//movendo ponteiro para iniciar  leitura de horários
-						row_index += 3
-						row := sheet.Row(row_index)
-						condicao_parada := row.Col(6)
+							//movendo ponteiro para iniciar  leitura de horários
+							row_index += 3
+							row := sheet.Row(row_index)
+							condicao_parada := row.Col(6)
 
-						for condicao_parada != " "{
+							for condicao_parada != "" && condicao_parada != " " {
 
-							points_initial_row := sheet.Row(row_index)
+								points_initial_row := sheet.Row(row_index)
 
-							natureza := points_initial_row.Col(6)
-							condicao_parada = natureza
-							id_natureza := getIdNatureza(natureza)
+								natureza := points_initial_row.Col(6)
+								condicao_parada = natureza
 
-							point := Point{
-								data: "12-12-12",
-								entrada_1: points_initial_row.Col(1),
-							    entrada_2: points_initial_row.Col(2),
-							    entrada_3: points_initial_row.Col(3),
-							    entrada_4: points_initial_row.Col(4),
-								natureza: natureza,
-								natureza_id: id_natureza,
+								fmt.Println(row_index, condicao_parada)
+
+								id_natureza := 12 //getIdNatureza(natureza)
+								observacao := points_initial_row.Col(7)
+
+								point := Point{
+									data:                   "12-12-12",
+									entrada_1:              points_initial_row.Col(1),
+									saida_1:                points_initial_row.Col(2),
+									entrada_2:              points_initial_row.Col(3),
+									saida_2:                points_initial_row.Col(4),
+									natureza:               natureza,
+									natureza_id:            id_natureza,
+									observacao:             observacao,
+									flg_gerado:             false,
+									flg_autorizado_pelo_rh: false,
+								}
+
+								/*Armazenando Ponto no banco de dados*/
+								insertPoints(point, employee)
+
+								row_index += 1
+
 							}
 
-
-							fmt.Println(points_initial_row.Col(6))
-							fmt.Println("Point", point)
-
-                            /*Armazenando Ponto*/
-							insertPoints(id_employee, 40, "2013-12-13 13:13:13", "2013-12-13 13:13:13","2013-12-13 13:13:13","2013-12-13 13:13:13","2013-12-13 13:13:13","2013-12-13 13:13:13", false, false, "2013-12-13 13:13:13", "nada", id_natureza)
-
-							row_index += 1
-
 						}
-
 					}
 
-					row_index++
 				}
 
 			}
@@ -254,8 +255,8 @@ func main(){
 	//getting all rows
 	//getAllRows("Sheet1", "../samples/file_example_XLS_10.xls")
 
-	//getPoints()
-	getAllContent()
+	getPoints()
+	//getAllContent()
 
 	// Output:
 	// resume

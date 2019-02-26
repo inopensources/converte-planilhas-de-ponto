@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="15b3843f-085e-4dff-847f-495a2add4300" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/queries.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Ponto/ponto.go" beforeDir="false" afterPath="$PROJECT_DIR$/ponto.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/queries.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/funcionario/func.go" beforeDir="false" afterPath="$PROJECT_DIR$/func.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/queries.go" beforeDir="false" afterPath="$PROJECT_DIR$/queries.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/samples/CartãoPonto_Sistemas_2018.xls" beforeDir="false" afterPath="$PROJECT_DIR$/samples/CartaoPonto_Sistemas_2018.xls" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -20,11 +18,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="430">
-              <caret line="224" column="41" lean-forward="true" selection-start-line="224" selection-start-column="41" selection-end-line="224" selection-end-column="41" />
+            <state relative-caret-position="320">
+              <caret line="140" column="77" lean-forward="true" selection-start-line="140" selection-start-column="77" selection-end-line="140" selection-end-column="77" />
               <folding>
                 <element signature="n#!!block;n#getQuantEmployers#0" />
-                <element signature="n#!!block;n#getPoints#0" />
+                <element signature="n#!!block;n#getAllContent#0" />
               </folding>
             </state>
           </provider>
@@ -33,9 +31,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/queries.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1935">
-              <caret line="158" column="19" selection-start-line="158" selection-start-column="19" selection-end-line="158" selection-end-column="19" />
+            <state relative-caret-position="116">
+              <caret line="167" column="6" selection-start-line="167" selection-start-column="6" selection-end-line="167" selection-end-column="6" />
               <folding>
+                <element signature="e#14#202#0" expanded="true" />
                 <element signature="n#!!block;n#connect#0" />
               </folding>
             </state>
@@ -93,11 +92,11 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="193" />
-    <option name="y" value="27" />
-    <option name="width" value="1279" />
-    <option name="height" value="830" />
+  <component name="ProjectFrameBounds" extendedState="4">
+    <option name="x" value="67" />
+    <option name="y" value="25" />
+    <option name="width" value="732" />
+    <option name="height" value="743" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -111,6 +110,11 @@
             <path>
               <item name="converte-planilhas-de-ponto" type="b2602c69:ProjectViewProjectNode" />
               <item name="converte-planilhas-de-ponto" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="converte-planilhas-de-ponto" type="b2602c69:ProjectViewProjectNode" />
+              <item name="converte-planilhas-de-ponto" type="462c0819:PsiDirectoryNode" />
+              <item name="samples" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -151,10 +155,10 @@
     </option>
   </component>
   <component name="ToolWindowManager">
-    <frame x="67" y="25" width="1299" height="743" extended-state="6" />
+    <frame x="67" y="25" width="732" height="743" extended-state="4" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18515563" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.19701986" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -167,7 +171,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="8" />
       <window_info anchor="bottom" id="Version Control" order="9" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.25081432" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.25407165" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -193,27 +197,6 @@
     <entry file="file://$PROJECT_DIR$/src/xls/workbook.go" />
     <entry file="file://$PROJECT_DIR$/src/xls/col.go" />
     <entry file="file://$PROJECT_DIR$/src/xls/row.go" />
-    <entry file="file://$PROJECT_DIR$/main.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="224" column="41" lean-forward="true" selection-start-line="224" selection-start-column="41" selection-end-line="224" selection-end-column="41" />
-          <folding>
-            <element signature="n#!!block;n#getQuantEmployers#0" />
-            <element signature="n#!!block;n#getPoints#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/queries.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1935">
-          <caret line="158" column="19" selection-start-line="158" selection-start-column="19" selection-end-line="158" selection-end-column="19" />
-          <folding>
-            <element signature="n#!!block;n#connect#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/func.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -225,6 +208,28 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="4" column="4" selection-start-line="4" selection-start-column="4" selection-end-line="8" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/queries.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="116">
+          <caret line="167" column="6" selection-start-line="167" selection-start-column="6" selection-end-line="167" selection-end-column="6" />
+          <folding>
+            <element signature="e#14#202#0" expanded="true" />
+            <element signature="n#!!block;n#connect#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="140" column="77" lean-forward="true" selection-start-line="140" selection-start-column="77" selection-end-line="140" selection-end-column="77" />
+          <folding>
+            <element signature="n#!!block;n#getQuantEmployers#0" />
+            <element signature="n#!!block;n#getAllContent#0" />
+          </folding>
         </state>
       </provider>
     </entry>
