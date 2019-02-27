@@ -8,6 +8,7 @@ import (
 	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
 	"log"
+	"strconv"
 	"strings"
 	"unicode"
 )
@@ -55,6 +56,68 @@ func remove_accent(word string) string{
 	return word
 }
 
+func mount_timestamp(time_entrada string, date string) string{
+
+	timestamp_formated := ""
+
+	time_entrada_float, _:= strconv.ParseFloat(time_entrada, 64)
+	time_entrada_float *=24.0
+
+	time_entrada_string := fmt.Sprintf("%f", time_entrada_float)
+	time_entrada_elements := strings.Split(time_entrada_string, ".")
+
+	entrada_hour := time_entrada_elements[0]
+	entrada_minutes := time_entrada_elements[1]
+	entrada_minutes = entrada_minutes[:2]
+
+	entrada_minutes_int, _:= strconv.Atoi(entrada_minutes)
+	if entrada_minutes_int > 60 {
+		entrada_minutes_int = 59
+	}
+	entrada_minutes_string := fmt.Sprintf("%d", entrada_minutes_int)
+
+
+	timestamp_formated = date + " " + entrada_hour + ":" + entrada_minutes_string + ":" + "00"
+
+	return timestamp_formated
+}
+
+
+func create_user(name string) int{
+
+	/*------------------------------making connection-----------------------------------
+	 *todo: seria ideal utilizar a funçao connect | referencia a db e err se perdendo
+	 */
+
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	/*-----------------------------------------------------------------------------------*/
+
+	//todo: tratar sql injection aqui
+	sqlStatement := `
+	INSERT INTO usuario(nome, senha, email, acesso, ativo, excluido, sistema, foto, digital, carga_horaria)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`
+	id := 0
+	err = db.QueryRow(sqlStatement, name,' ', ' ', ' ', true, false, false, ' ', ' ', ' ').Scan(&id)
+
+	if err != nil {
+		panic(err)
+	}
+
+    return id
+}
+
+
 /****************************
 * Retorna id de funcionário
 ******************************/
@@ -83,13 +146,18 @@ func getIdEmployee(name string) int{
 	fmt.Println(name)
 
 	var id_user int
+
 	sqlStatement := `SELECT id FROM usuario WHERE nome LIKE $1`
 	err = db.QueryRow(sqlStatement, name).Scan(&id_user)
 	if err == sql.ErrNoRows {
-		log.Fatal("No Results Found")
+		//log.Fatal("Usuário não encontrado | Criando usuário")
+		fmt.Println("Usuário não encontrado | Criando usuário")
+		//se usuário não existir, cria usuário
+		id_user = create_user(name)
+
 	}
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
 	}
 
 	return id_user
@@ -171,13 +239,15 @@ func insertPoints(point Point, employee Employee){
 	usuario_id := employee.id
 	gerente_id := 40
 
+	date := point.data
+
 	//entradas em format string e com apenas as datas
-	entrada_1 := "2013-12-13 13:13:13" //point.entrada_1
-	saida_1 :="2013-12-13 13:13:13" // point.saida_1
-	entrada_2 := "2013-12-13 13:13:13" //point.entrada_2
-	saida_2 := "2013-12-13 13:13:13" //point.saida_2
-	entrada_3 := "2013-12-13 13:13:13"
-	saida_3 := "2013-12-13 13:13:13"
+	entrada_1 := mount_timestamp(point.entrada_1, date)
+	saida_1 := mount_timestamp(point.saida_1, date)// point.saida_1
+	entrada_2 := mount_timestamp(point.entrada_2, date) //point.entrada_2
+	saida_2 := mount_timestamp(point.saida_2, date) //point.saida_2
+	entrada_3 := mount_timestamp(point.entrada_2, date)
+	saida_3 :=  mount_timestamp(point.saida_2, date)
 
 	flg_gerado := point.flg_gerado
 	flg_autorizado_pelo_rh := point.flg_autorizado_pelo_rh
@@ -186,34 +256,8 @@ func insertPoints(point Point, employee Employee){
 	observacao := point.observacao
 	tipo_ausencia := point.natureza_id
 
-	/*entrada_1_formated, _ := strconv.ParseFloat(entrada_1, 64)
-	entrada_1_formated *=24
-
-	saida1_formated, _ := strconv.ParseFloat(saida1, 64)
-	saida1_formated *=24
-
-	entrada2_formated, _ := strconv.ParseFloat(entrada2, 64)
-	entrada2_formated *=24
-
-	saida2_formated, _ := strconv.ParseFloat(saida2, 64)
-	saida2_formated *=24
-*/
-/*	//formatando entradas
-	entrada_string := fmt.Sprintf("%f", entrada_1)
-	fmt.Println("entrada_string", entrada_string)
-	entrada_elements_time := strings.Split(entrada_string, ".")
-	fmt.Println("entrada_elements_time", entrada_elements_time)
-	entrada_hour := entrada_elements_time[0]
-	fmt.Println("entrada_hour", entrada_hour)
-	entrada_minutes := entrada_elements_time[1]
-	fmt.Println("entrada_minutes", entrada_minutes)
-	entrada_1_formated := entrada_hour + ":" + strconv.Itoa(int(entrada_minutes[0]))
-	fmt.Println("entrada_1_formated", entrada_1_formated)
-*/
   /*----------------------------------------------------------------------------------------------------------*/
 
-
-	//todo: tratar sql injection aqui
 	sqlStatement := `
 	INSERT INTO ponto (usuario_id, gerente_id, entrada1, saida1, entrada2, saida2, entrada3, saida3, flg_gerado, flg_autorizado_pelo_rh, created_at, observacao, tipo_ausencia)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`

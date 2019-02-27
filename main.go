@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/extrame/xls"
 	_ "github.com/lib/pq"
+	"strconv"
 	"strings"
 )
 
@@ -105,7 +106,7 @@ func getPoints(){
 	data := ""
 
 
-	if xlFile, err := xls.Open("./samples/CartaoPonto_Sistemas_2017.xls", "utf-8"); err == nil {
+	if xlFile, err := xls.Open("./samples/CartaoPonto_Sistemas_2018.xls", "utf-8"); err == nil {
 
 		if err != nil {
 			fmt.Print(err)
@@ -114,6 +115,7 @@ func getPoints(){
 		for i := 0; i <= xlFile.NumSheets(); i++ {
 
 			sheet := xlFile.GetSheet(i)
+			mes  = 0
 
 			//verifica se é aba modelo
 			if xlFile.GetSheet(i).Name != "MODELO" {
@@ -139,59 +141,64 @@ func getPoints(){
 						if row.Col(0) == "F O L H A D E F R E Q U E N C I A" {
 							/*assumindo uma folha de frequência por mês*/
 							mes++
+							dia = 0
 
 							//movendo ponteiro para iniciar  leitura de horários
 							row_index += 3
-							row := sheet.Row(row_index)
-							condicao_parada := row.Col(6)
 
-							for condicao_parada != "" && condicao_parada != " " {
+							condicao_parada := false //row.Col(6)
+
+							for !condicao_parada {
 
 								/*assumindo cada linha um dia*/
 								dia++
-
 								points_initial_row := sheet.Row(row_index)
-
 								natureza := points_initial_row.Col(6)
-								condicao_parada = natureza
 
-								id_natureza := 12 //getIdNatureza(natureza)
-								observacao := points_initial_row.Col(7)
+								if natureza != "" && natureza != " "{
 
-								data = string(dia) + "-" + string(mes) + "-" + ano
-								fmt.Println(data)
+									id_natureza := 12 //getIdNatureza(natureza)
+									observacao := points_initial_row.Col(7)
 
-								point := Point{
-									data:                   data,
-									entrada_1:              points_initial_row.Col(1),
-									saida_1:                points_initial_row.Col(2),
-									entrada_2:              points_initial_row.Col(3),
-									saida_2:                points_initial_row.Col(4),
-									natureza:               natureza,
-									natureza_id:            id_natureza,
-									observacao:             observacao,
-									flg_gerado:             false,
-									flg_autorizado_pelo_rh: false,
+									//usando TrimPrefix para capturar ano em data
+									ano = strings.TrimPrefix(ano, "01/01/")
+									data = strconv.Itoa(mes) + "-" + strconv.Itoa(dia) +  "-" + ano
+
+									point := Point{
+										data:                   data,
+										entrada_1:              points_initial_row.Col(1),
+										saida_1:                points_initial_row.Col(2),
+										entrada_2:              points_initial_row.Col(3),
+										saida_2:                points_initial_row.Col(4),
+										natureza:               natureza,
+										natureza_id:            id_natureza,
+										observacao:             observacao,
+										flg_gerado:             false,
+										flg_autorizado_pelo_rh: false,
+									}
+
+									/*Armazenando Ponto no banco de dados*/
+									insertPoints(point, employee)
+
+									row_index += 1
+
+								}else {
+									condicao_parada = true
 								}
 
-								/*Armazenando Ponto no banco de dados*/
-								insertPoints(point, employee)
+								}
 
-								row_index += 1
 
 							}
 
 						}
 					}
 
-				}
-
-			}else{
+				}else{
 
 				//utilizando modelo para recuperar ano
 				row_date := sheet.Row(1)
 				ano = strings.Split(row_date.Col(8), ";")[0]// everything before the query
-
 			}
 
 		}
@@ -289,6 +296,7 @@ func mount_objects() {
 func main(){
 
 
+
 	print("=======================\n" +
 		"Conversor Licença XLS/XSLX\n" +
 		"========================\n")
@@ -308,9 +316,6 @@ func main(){
 	//getAllRows("Sheet1", "../samples/file_example_XLS_10.xls")
 
 	getPoints()
-	//getAllContent()
 
-	// Output:
-	// resume
 
 }
