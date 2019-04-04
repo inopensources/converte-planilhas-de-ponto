@@ -106,7 +106,7 @@ func getPoints(){
 	data := ""
 
 
-	if xlFile, err := xls.Open("./samples/CartaoPonto_Sistemas_2018.xls", "utf-8"); err == nil {
+	if xlFile, err := xls.Open("./samples/file_example_XLS_10.xls", "utf-8"); err == nil {
 
 		if err != nil {
 			fmt.Print(err)
@@ -210,7 +210,7 @@ func getPoints(){
 func getAllContent() {
 
 	//using extrame library
-	if xlFile, err := xls.Open("./samples/CartaoPonto_Sistemas_2017.xls", "UTF-32"); err == nil {
+	if xlFile, err := xls.Open("./samples/file_example_XLS_10.xls", "UTF-32"); err == nil {
 
 		if err != nil {
 			fmt.Print(err)
